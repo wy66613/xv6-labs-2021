@@ -303,6 +303,9 @@ fork(void)
 
   safestrcpy(np->name, p->name, sizeof(p->name));
 
+  // 子进程复制父进程的mask
+  np->syscall_trace = p->syscall_trace;
+
   pid = np->pid;
 
   release(&np->lock);
