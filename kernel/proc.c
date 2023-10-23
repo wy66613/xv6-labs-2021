@@ -8,7 +8,7 @@
 
 struct cpu cpus[NCPU];
 
-struct proc proc[NPROC];
+struct proc proc[NPROC];  // 保存进程的结构体字段
 
 struct proc *initproc;
 
@@ -656,4 +656,20 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64
+nproc(void)
+{
+  struct proc *p;
+  uint64 cnt = 0;
+
+  // 遍历proc[NPROC]数组
+  for(p=proc; p<&proc[NPROC];p++){
+    if(p->state != UNUSED){
+      cnt++;
+    }
+  }
+
+  return cnt;
 }
