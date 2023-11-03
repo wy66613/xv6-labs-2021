@@ -75,5 +75,6 @@
 
 struct usyscall {
   int pid;  // Process ID
+  struct proc *parent;  // Parent process 
 };
 #endif
