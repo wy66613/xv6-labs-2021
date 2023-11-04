@@ -8,5 +8,3 @@ ugetpid(void)
   struct usyscall *u = (struct usyscall *)USYSCALL;
   return u->pid;
 }
-#define USYSCALL (TRAPFRAME - PGSIZE)
-
