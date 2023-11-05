@@ -15,6 +15,11 @@ extern char etext[];  // kernel.ld sets this to end of kernel code.
 
 extern char trampoline[]; // trampoline.S
 
+/*
+ * the vmprint function's prefix
+ */
+static char* prefix[3] = {"..", ".. ..", ".. .. .."};
+
 // Make a direct-map page table for the kernel.
 pagetable_t
 kvmmake(void)
@@ -430,5 +435,33 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return 0;
   } else {
     return -1;
+  }
+}
+
+// Cycle through the contents of a page table
+// Reference freewalk() function
+void
+vmprint(pagetable_t pgtbl)
+{
+  printf("page table %p\n", pgtbl);
+  // Entry recursion to print pgtbl
+  vmprint_re(pgtbl, 0);
+}
+
+void
+vmprint_re(pagetable_t pgtbl, int layer){
+  // End condition
+  if(layer > 2){
+    return;
+  }
+
+  // There are 2^9 = 512 PTEs in a page table.
+  for(int i = 0; i < 512; i++){
+    pte_t pte = pgtbl[i];
+    if((pte & PTE_V)){
+      uint64 pa = PTE2PA(pte);
+      printf("%s%d: pte %p pa %p\n", prefix[layer], i, pte, pa);
+      vmprint_re((pagetable_t)pa, layer+1);
+    }
   }
 }
