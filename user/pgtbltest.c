@@ -52,7 +52,7 @@ void
 pgaccess_test()
 {
   char *buf;
-  unsigned int abits;
+  unsigned int abits;  // 8 Betys
   printf("pgaccess_test starting\n");
   testname = "pgaccess_test";
   buf = malloc(32 * PGSIZE);

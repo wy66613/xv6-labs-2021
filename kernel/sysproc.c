@@ -81,6 +81,46 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+  uint64 va;  // The starting virtual address of the first user page to check.
+  int pgnum;  // The number of pages to check
+  uint64 bitmask;  // Use one bit per page
+  if(argaddr(0, &va) < 0){
+    return -1;
+  }
+  if(argint(1, &pgnum) < 0){
+    return -1;
+  }
+  if(argaddr(2, &bitmask) < 0){
+    return -1;
+  }
+
+  if(pgnum > 64){
+    return -1;
+  }
+
+  struct proc *p = myproc();
+  uint64 kbuf = 0; // Kernel buffer
+  pte_t *pte;
+
+  for(int i = 0; i < pgnum; i++){
+    if(va > MAXVA)
+      return -1;
+
+    pte = walk(p->pagetable, va, 0);
+    if(pte == 0)
+      return -1;
+
+    if(*pte & PTE_A){
+      kbuf |= (1 << i);  // Set the page bit in kernel buffer
+      *pte &= (~PTE_A);
+    }
+
+    va += PGSIZE;  // To the next page
+  }
+
+  if(copyout(p->pagetable, bitmask, (char*)&kbuf, sizeof(kbuf)) < 0)
+    return -1;
+
   return 0;
 }
 #endif
