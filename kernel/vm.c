@@ -311,6 +311,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
         panic("uvmcopy: page not present");
       pa = PTE2PA(*pte); 
 
+      // ref of pa +1
       refcnt_add(pa);
 
       *pte &= (~PTE_W);
